@@ -1,6 +1,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-# Chrome расширение для раздела комментариев сайта [https://www.dtf.ru](dtf.ru)
+# Chrome расширение для раздела комментариев сайта [dtf.ru](https://www.dtf.ru)
 
 ### Возможности:
 * Скрыть комментарии и увидеть рандомную картинку с котиками.
