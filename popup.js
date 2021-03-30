@@ -2,7 +2,11 @@ window.addEventListener('load', () => {
 	const toggleComments = document.querySelector('#commentsHide');
 	const radioButtons = Array.from(document.querySelectorAll('input[name="comments"]'));
 
-	chrome.storage.sync.get(['hideComments', 'collapseInitialComments', 'collapseAllComments'], (data) => {
+	chrome.storage.sync.get({
+		hideComments: false,
+		collapseInitialComments: false,
+		collapseAllComments: true
+	}, (data) => {
 		if (data.hideComments) {
 			!!toggleComments && (toggleComments.checked = true);
 		}
