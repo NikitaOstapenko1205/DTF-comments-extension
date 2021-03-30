@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+        margin: 0;
+        padding: 15px;
+        background-color: #d9f5ff;
+        width: 300px;
+    }
+    .input-block {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    .radio-block {
+        margin-top: 10px;
+    }
+    .radio-blocks {
+        border-top: 1px solid;
+        margin-top: 10px;
+    }
+    label {
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 10px;
+        line-height: 1;
+    }
+    input {
+        margin: 0;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="input-block">
+    <input data-hide-comments="false" type="checkbox" id="commentsHide" />
+    <label for="commentsHide">Скрыть блок комментариев?</label>
+  </div>
+  <div class="radio-blocks">
+    <div class="input-block radio-block">
+      <input checked id="collapseAllComments" type="radio" name="comments" value="collapseAllComments" />
+      <label for="collapseAllComments">Свернуть все комментарии</label>
+    </div>
+    <div class="input-block radio-block">
+      <input id="collapseInitialComments" type="radio" name="comments" value="collapseInitialComments" />
+      <label for="collapseInitialComments">Свернуть начальные комментарии</label>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
