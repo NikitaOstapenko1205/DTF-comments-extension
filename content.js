@@ -112,12 +112,16 @@ const collapseSingleComment = (comments, collapseOption) => {
 		}
 
 		if (commentChildren.childElementCount > 0 && needClick) {
-			const collapseChildrenElem = collapseOption === 'close' ?
-				commentChildren.nextElementSibling :
-				commentChildren.nextElementSibling.nextElementSibling;
+			let collapseChildrenElem;
+
+			if (collapseOption === 'close') {
+				collapseChildrenElem = commentChildren.nextElementSibling;
+			} else if (commentChildren.parentElement.querySelector('.comments__item__expand')) {
+				collapseChildrenElem = commentChildren.nextElementSibling.nextElementSibling;
+			}
 
 			const scrollPositionBeforeCollapse = window.scrollY;
-			collapseChildrenElem && collapseChildrenElem.click();
+			!!collapseChildrenElem && collapseChildrenElem.click();
 			window.scrollTo(0, scrollPositionBeforeCollapse);
 		}
 	});
