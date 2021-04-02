@@ -1,6 +1,7 @@
 window.addEventListener('load', () => {
 	const toggleComments = document.querySelector('#commentsHide');
 	const radioButtons = Array.from(document.querySelectorAll('input[name="comments"]'));
+	const radioBlocks = document.querySelector('.radio-blocks');
 
 	chrome.storage.sync.get({
 		hideComments: false,
@@ -9,6 +10,7 @@ window.addEventListener('load', () => {
 	}, (data) => {
 		if (data.hideComments) {
 			!!toggleComments && (toggleComments.checked = true);
+			radioBlocks.style.display = 'none';
 		}
 		if (data.collapseInitialComments) {
 			const initialComments = document.querySelector('input[value="collapseInitialComments"]');
@@ -49,8 +51,17 @@ window.addEventListener('load', () => {
 	});
 
 	const sendMessage = (data) => {
-		chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-			chrome.tabs.sendMessage(tabs[0].id, data);
+		chrome.tabs.query({url: ["https://dtf.ru/*", "https://tjournal.ru/*", "https://vc.ru/*"]}, (tabs) => {
+			console.log(tabs);
+			if (!!tabs.length) {
+				tabs.map((tab) => {
+					chrome.tabs.sendMessage(tab.id, data, () => {
+						chrome.storage.sync.get(['hideComments'], (data) => {
+							radioBlocks.style.display = data.hideComments ? 'none' : 'block';
+						});
+					});
+				});
+			}
 		});
 	}
 });

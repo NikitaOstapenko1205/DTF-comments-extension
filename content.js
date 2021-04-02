@@ -27,6 +27,7 @@ window.addEventListener('popstate', (event) => {
 });
 
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
+	sendResponse('Got message');
 	checkPageOnCommentsBlock();
 });
 

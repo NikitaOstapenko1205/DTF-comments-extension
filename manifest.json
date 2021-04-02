@@ -20,5 +20,5 @@
       "js": ["content.js", "popup.js"]
     }
   ],
-  "permissions": ["activeTab", "storage"]
+  "permissions": ["tabs", "storage"]
 }
