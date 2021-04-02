@@ -52,7 +52,6 @@ window.addEventListener('load', () => {
 
 	const sendMessage = (data) => {
 		chrome.tabs.query({url: ["https://dtf.ru/*", "https://tjournal.ru/*", "https://vc.ru/*"]}, (tabs) => {
-			console.log(tabs);
 			if (!!tabs.length) {
 				tabs.map((tab) => {
 					chrome.tabs.sendMessage(tab.id, data, () => {
