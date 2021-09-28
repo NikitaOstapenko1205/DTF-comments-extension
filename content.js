@@ -4,6 +4,7 @@ const linksToPagesWithComments = [
 	'widget_comment__entry',
 	'live__item__text',
 	'u-notification__link',
+	'profile_comment_favorite__title'
 ]
 
 // const elemsDisabledForClicks = ['comments__item__collapse_subtree', 'comments__item__expand'];
@@ -13,17 +14,19 @@ window.addEventListener('load', (event) => checkPageOnCommentsBlock());
 window.addEventListener('click', (event) => {
 	event.stopPropagation();
 
-	if (linksToPagesWithComments.some((elem) => event.target.classList.contains(elem))) {
+	if (linksToPagesWithComments.some((elem) => {
+		return event.target.classList.contains(elem) || event.target.parentElement.classList.contains(elem);
+	})) {
 		setTimeout(() => {
 			checkPageOnCommentsBlock();
-		}, 3000);
+		}, 3500);
 	}
 });
 
 window.addEventListener('popstate', (event) => {
 	setTimeout(() => {
 		checkPageOnCommentsBlock();
-	}, 3000);
+	}, 3500);
 });
 
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
@@ -34,7 +37,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
 const checkPageOnCommentsBlock = () => {
 	const commentsBlock = document.querySelector('.comments');
 
-	if (commentsBlock) {
+	if (!!commentsBlock) {
 		chrome.storage.sync.get(['hideComments', 'collapseInitialComments', 'collapseAllComments'], (commentsOption) => {
 			toggleCommentsBlock(commentsBlock, commentsOption);
 		});
@@ -90,7 +93,7 @@ const collapseComments = (commentsBlock, collapseElems) => {
 	const commentsInitialArr = Array.from(commentsBlock.querySelector('.comments__content').children);
 	const commentsInternalArr = commentsInitialArr && commentsInitialArr.reduce(
 		(acc, initialComment) => {
-			return [...acc, ...Array.from(initialComment.querySelectorAll('.comments__item'))];
+			return [...acc, ...Array.from(initialComment.querySelectorAll('.comment'))];
 		}, []);
 
 	collapseSingleComment([...commentsInitialArr, ...commentsInternalArr], 'close');
@@ -102,12 +105,13 @@ const collapseComments = (commentsBlock, collapseElems) => {
 
 const collapseSingleComment = (comments, collapseOption) => {
 	comments.map((comment) => {
-		const commentChildren = comment.querySelector('.comments__item__children');
+
+		const commentChildren = comment.querySelector('.comment__children');
 		let needClick = false;
 
 		if (
 			collapseOption === 'open' ||
-			(collapseOption === 'close' && !comment.classList.contains('comments__item--collapsed'))
+			(collapseOption === 'close' && !comment.classList.contains('comment--collapsed'))
 		) {
 			needClick = true;
 		}
@@ -116,9 +120,9 @@ const collapseSingleComment = (comments, collapseOption) => {
 			let collapseChildrenElem;
 
 			if (collapseOption === 'close') {
+				collapseChildrenElem = commentChildren.previousElementSibling;
+			} else if (commentChildren.parentElement.querySelector('.comment__expand')) {
 				collapseChildrenElem = commentChildren.nextElementSibling;
-			} else if (commentChildren.parentElement.querySelector('.comments__item__expand')) {
-				collapseChildrenElem = commentChildren.nextElementSibling.nextElementSibling;
 			}
 
 			const scrollPositionBeforeCollapse = window.scrollY;
