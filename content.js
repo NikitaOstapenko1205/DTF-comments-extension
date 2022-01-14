@@ -2,12 +2,13 @@ const linksToPagesWithComments = [
 	'content-link',
 	'content-feed__link',
 	'widget_comment__content__text',
+	'widget_comment__content',
 	'widget_comment__entry',
 	'live__item__text',
 	'profile_comment_favorite__title',
-	'pddddbe2',
-	'ijj670d0'
-]
+	'u-notification__link',
+	'comments_counter__count'
+];
 
 window.addEventListener('load', (event) => {
 	checkPageOnCommentsBlock();
@@ -16,7 +17,7 @@ window.addEventListener('load', (event) => {
 		event.stopPropagation();
 
 		if (linksToPagesWithComments.some((elem) => {
-			return event.target.classList.contains(elem) || event.target.parentElement.classList.contains(elem);
+			return event.target?.classList.contains(elem) || event.target?.parentElement?.classList.contains(elem) || checkClickOnSideCommentBlock(event.path);
 		})) {
 			setTimeout(() => {
 				checkPageOnCommentsBlock();
@@ -36,11 +37,15 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
 	checkPageOnCommentsBlock();
 });
 
+const checkClickOnSideCommentBlock = (links) => {
+	return Array.from(links.map((path) => path.className).filter((path) => path?.includes('layout__right-column'))).length > 0;
+}
+
 const checkPageOnCommentsBlock = () => {
 	const commentsBlock = document.querySelector('.comments');
 
 	if (!!commentsBlock) {
-		chrome.storage.sync.get(['hideComments', 'collapseInitialComments', 'collapseAllComments'], (commentsOption) => {
+		chrome.storage.sync.get(['hideComments', 'collapseInitialComments', 'collapseAllComments', 'expandAllComments'], (commentsOption) => {
 			toggleCommentsBlock(commentsBlock, commentsOption);
 		});
 
@@ -65,7 +70,7 @@ const checkPageOnCommentsBlock = () => {
 
 const makeRealVotesBlock = (comments) => {
 	comments.map(async (comment) => {
-		await comment.querySelector('.vote__value').addEventListener('mouseenter', async (e) => {
+		await comment.querySelector('.vote__value')?.addEventListener('mouseenter', async (e) => {
 
 			if (!e.target.classList.contains('got-real-vote')) {
 				const likesDis = await getLikeDis(comment);
@@ -164,7 +169,16 @@ const toggleCommentsBlock = (commentsBlock, commentsOption) => {
 	toggleBlockWithCat(commentsBlock, commentsOption.hideComments);
 
 	if (!commentsOption.hideComments) {
-		const collapseElems = commentsOption.collapseAllComments ? 'all' : 'initial';
+		let collapseElems;
+
+		if (commentsOption.expandAllComments) {
+			collapseElems = 'expand';
+		} else if (commentsOption.collapseAllComments) {
+			collapseElems = 'all';
+		} else if (commentsOption.collapseInitialComments) {
+			collapseElems = 'initial';
+		}
+
 		const commentsInitialArr = Array.from(commentsBlock.querySelectorAll("[data-reply_to='0']"));
 		collapseComments(commentsBlock, commentsInitialArr, collapseElems);
 	}
@@ -176,6 +190,21 @@ const collapseComments = (commentsBlock, comments, collapseOption) => {
 	Array.from(commentsBlock.querySelectorAll('.comment__expand-branch--visible')).map((openComments) => {
 		openComments.click();
 	});
+
+	if (collapseOption === 'expand') {
+		const commentsMore = commentsBlock.querySelector('.comments__more');
+		const openAllComments = commentsBlock.querySelector('.comments__link_to_all');
+
+		if (commentsMore !== null) {
+			commentsMore.click();
+		}
+		if (openAllComments !== null) {
+			openAllComments.querySelector('.t-link-classic').click();
+		}
+
+		makeRealVotesBlock(Array.from(commentsBlock.querySelectorAll('.comment')));
+		return;
+	}
 
 	comments.map((comment) => {
 		const id = comment.dataset.id;

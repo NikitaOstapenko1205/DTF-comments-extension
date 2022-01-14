@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Manipulation with comments on dtf, tj, vc",
   "description": "Manipulation with comments on dtf, tj, vc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Nikita Ostapenko",
   "browser_action": {
     "default_title": "Manipulation with comments on dtf, tj, vc",

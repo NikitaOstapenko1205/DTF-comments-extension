@@ -6,7 +6,8 @@ window.addEventListener('load', () => {
 	chrome.storage.sync.get({
 		hideComments: false,
 		collapseInitialComments: false,
-		collapseAllComments: true
+		collapseAllComments: true,
+		expandAllComments: false
 	}, (data) => {
 		if (data.hideComments) {
 			!!toggleComments && (toggleComments.checked = true);
@@ -22,10 +23,15 @@ window.addEventListener('load', () => {
 			!!allComments && (allComments.checked = true);
 			return false;
 		}
+		if (data.expandAllComments) {
+			const allComments = document.querySelector('input[value="expandAllComments"]');
+			!!allComments && (allComments.checked = true);
+			return false;
+		}
 	});
 
 	!!toggleComments && toggleComments.addEventListener('change', (event) => {
-		chrome.storage.sync.get(['hideComments', 'collapseInitialComments', 'collapseAllComments'], (data) => {
+		chrome.storage.sync.get(['hideComments', 'collapseInitialComments', 'collapseAllComments', 'expandAllComments'], (data) => {
 			chrome.storage.sync.set({
 				...data,
 				hideComments: event.target.checked
@@ -38,11 +44,12 @@ window.addEventListener('load', () => {
 
 	radioButtons.map((input) => {
 		input.addEventListener('change', (event) => {
-			chrome.storage.sync.get(['hideComments', 'collapseInitialComments', 'collapseAllComments'], (data) => {
+			chrome.storage.sync.get(['hideComments', 'collapseInitialComments', 'collapseAllComments', 'expandAllComments'], (data) => {
 				chrome.storage.sync.set({
 					...data,
 					collapseInitialComments: false,
 					collapseAllComments: false,
+					expandAllComments: false,
 					[event.target.value]: event.target.checked
 				});
 				sendMessage('Change radio');
